@@ -1,0 +1,11 @@
+# config.yml
+
+autodoc:
+  username: ""
+  password: ""
+  url: "https://www.autodoc.ru/"
+  auth_url: "https://auth.autodoc.ru/token"
+
+telegram:
+  token: ""
+  chat_id: 0
