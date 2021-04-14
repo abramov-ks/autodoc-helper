@@ -3,19 +3,21 @@ package autodoc
 type BearerToken string
 
 type AutodocConfig struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	BaseUrl  string `yaml:"url"`
-	AuthUrl  string `yaml:"auth_url"`
+	Username       string `yaml:"username"`
+	Password       string `yaml:"password"`
+	BaseUrl        string `yaml:"url"`
+	AuthUrl        string `yaml:"auth_url"`
+	PartnumbersUrl string `yaml:"partnumbers_url"`
 }
 
 // Структура сессии к автодоку
 type AutodocSession struct {
-	AuthData AuthResult
-	BaseUrl  string
-	AuthUrl  string
-	Username string
-	Password string
+	AuthData       AuthResult
+	BaseUrl        string
+	AuthUrl        string
+	PartnumbersUrl string
+	Username       string
+	Password       string
 }
 
 // Результат авторизации

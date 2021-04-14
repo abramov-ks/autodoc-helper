@@ -13,6 +13,7 @@ func (session *AutodocSession) FillFromConfig(config *AutodocConfig) {
 	session.Password = config.Password
 	session.BaseUrl = config.BaseUrl
 	session.AuthUrl = config.AuthUrl
+	session.PartnumbersUrl = config.PartnumbersUrl
 }
 
 // GET запрос с авторизацией

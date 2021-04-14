@@ -2,6 +2,7 @@ package autodoc
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 )
 
@@ -17,13 +18,18 @@ func parseCheckPartnumberResponse(response []byte) (responseStruc *PartnumberPri
 	return result, nil
 }
 
+//getPartnumbersUrl
+func (session *AutodocSession) getPartnumbersUrl(partnumber string) string {
+	return fmt.Sprintf(session.PartnumbersUrl, partnumber)
+}
+
 // проверить цену на запчасть
 func (session AutodocSession) CheckPartnumber(partnumber string) (priceResponse *PartnumberPriceResponse, err error) {
-	var url = "https://webapi.autodoc.ru/api/spareparts/511/" + partnumber + "/2?isrecross=false"
+	var url = session.getPartnumbersUrl(partnumber)
 	var response, authError = session.makeAuthorizedGetRequest(url)
 
 	if authError != nil {
-		log.Println("Error on partnumber request: %s", err)
+		log.Printf("Error on partnumber request: %s", err)
 		return nil, authError
 	}
 	return parseCheckPartnumberResponse(response)
