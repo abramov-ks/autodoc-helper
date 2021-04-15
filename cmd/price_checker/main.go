@@ -43,10 +43,12 @@ func NewConfig(configPath string) (*checker.Config, error) {
 func main() {
 	var cfgPath string
 	var partNumber string
+	var addPartNumber string
 	var appVersion bool
 	flag.StringVar(&cfgPath, "config", "./config.yml", "path to config file")
 	flag.BoolVar(&appVersion, "version", false, "show application version")
-	flag.StringVar(&partNumber, "partnumber", "", "Partnumber to check")
+	flag.StringVar(&partNumber, "check", "", "Partnumber to check")
+	flag.StringVar(&addPartNumber, "add", "", "Partnumber to check")
 	flag.Parse()
 	if appVersion == true {
 		fmt.Printf("Price Checker v%s\n", APP_VERSION)
@@ -62,6 +64,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.Run(partNumber)
+	var action = new(checker.AppAction)
+	if partNumber != "" {
+		action.Action = "check"
+		action.Value = partNumber
+	} else if addPartNumber != "" {
+		action.Action = "add"
+		action.Value = addPartNumber
+	}
+
+	cfg.Run(action)
 
 }

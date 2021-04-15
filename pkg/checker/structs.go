@@ -16,3 +16,8 @@ type Config struct {
 	VersionFile string                `yaml:"version_file"`
 	DataBase    db.DatabaseConfig     `yaml:"database"`
 }
+
+type AppAction struct {
+	Action string
+	Value  string
+}

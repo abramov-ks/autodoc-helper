@@ -3,9 +3,9 @@
 autodoc:
   username: ""
   password: ""
-  url: "https://www.autodoc.ru/"
+  url: "https://www.autodoc.ru"
   auth_url: "https://auth.autodoc.ru/token"
-  partnumbers_url: "https://webapi.autodoc.ru/api/spareparts/511/%s/2?isrecross=false"
+  api_url: "https://webapi.autodoc.ru"
 
 telegram:
   token: ""

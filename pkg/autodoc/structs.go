@@ -3,21 +3,21 @@ package autodoc
 type BearerToken string
 
 type AutodocConfig struct {
-	Username       string `yaml:"username"`
-	Password       string `yaml:"password"`
-	BaseUrl        string `yaml:"url"`
-	AuthUrl        string `yaml:"auth_url"`
-	PartnumbersUrl string `yaml:"partnumbers_url"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	BaseUrl  string `yaml:"url"`
+	AuthUrl  string `yaml:"auth_url"`
+	ApiUrl   string `yaml:"api_url"`
 }
 
 // Структура сессии к автодоку
 type AutodocSession struct {
-	AuthData       AuthResult
-	BaseUrl        string
-	AuthUrl        string
-	PartnumbersUrl string
-	Username       string
-	Password       string
+	AuthData AuthResult
+	BaseUrl  string
+	AuthUrl  string
+	ApiUrl   string
+	Username string
+	Password string
 }
 
 // Результат авторизации
@@ -56,4 +56,12 @@ type PartnumberPriceResponseInventoryItemSupplier struct {
 	NextOrderDate       string `json:"nextOrderDate"`
 	NextOrderDateString string `json:"nextOrderDateString"`
 	Schedule            string `json:"schedule"`
+}
+
+// инфа о производителе
+type ManufacterInfo struct {
+	Id               int    `json:"id"`
+	ManufacturerName string `json:"manufacturerName"`
+	PartName         string `json:"partName"`
+	ArtNumber        string `json:"artNumber"`
 }
