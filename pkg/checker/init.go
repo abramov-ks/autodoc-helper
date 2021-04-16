@@ -5,6 +5,7 @@ import (
 	"github.com/abramov-ks/autodoc-helper/pkg/autodoc"
 	"github.com/abramov-ks/autodoc-helper/pkg/db"
 	"github.com/abramov-ks/autodoc-helper/pkg/db/models"
+	"github.com/abramov-ks/autodoc-helper/pkg/db/repository"
 	"log"
 	"time"
 )
@@ -106,6 +107,16 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 	return
 }
 
+func (config Config) doCheckAll(session *autodoc.AutodocSession) {
+	checkRecords, err := repository.GetPartnumbersChecklist(config.DataBase)
+	if err != nil {
+		log.Println("Cannot get checklist: ", err)
+	}
+	for _, record := range checkRecords {
+		config.doPartnumberCheck(session, record.Partnumber)
+	}
+}
+
 //
 func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession, partNumber string) {
 	if partNumber == "" {
@@ -148,6 +159,10 @@ func (config Config) Run(action *AppAction) {
 	if action.Action == "add" {
 		config.doAddPartnumberForChecking(&autodocSession, action.Value)
 		return
+	}
+
+	if action.Action == "check-all" {
+		config.doCheckAll(&autodocSession)
 	}
 
 }

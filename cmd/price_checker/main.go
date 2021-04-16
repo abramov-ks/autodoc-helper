@@ -45,9 +45,11 @@ func main() {
 	var partNumber string
 	var addPartNumber string
 	var appVersion bool
+	var checkAll bool
 	flag.StringVar(&cfgPath, "config", "./config.yml", "path to config file")
 	flag.BoolVar(&appVersion, "version", false, "show application version")
 	flag.StringVar(&partNumber, "check", "", "Partnumber to check")
+	flag.BoolVar(&checkAll, "check-all", false, "Partnumber to check")
 	flag.StringVar(&addPartNumber, "add", "", "Partnumber to check")
 	flag.Parse()
 	if appVersion == true {
@@ -71,6 +73,8 @@ func main() {
 	} else if addPartNumber != "" {
 		action.Action = "add"
 		action.Value = addPartNumber
+	} else if checkAll == true {
+		action.Action = "check-all"
 	}
 
 	cfg.Run(action)

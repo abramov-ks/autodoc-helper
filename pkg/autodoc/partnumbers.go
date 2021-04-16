@@ -49,11 +49,11 @@ func parseCheckManufacterInfoResponse(response []byte) (*[]ManufacterInfo, error
 	return result, nil
 }
 
-// проверить цену на запчасть
+// GetPartnumberPrices проверить цену на запчасть
 func (session AutodocSession) GetPartnumberPrices(partnumber string) (priceResponse *PartnumberPriceResponse, err error) {
 	manufacterInfos, manufacterInfosError := session.CheckManufacter(partnumber)
 	if manufacterInfosError != nil {
-		log.Println("Cannot check manufacter info: %s", manufacterInfosError)
+		log.Printf("Cannot check manufacter info: %s\n", manufacterInfosError)
 	}
 	if len((*manufacterInfos)) < 1 {
 		return nil, errors.New("Manufacter not found")
