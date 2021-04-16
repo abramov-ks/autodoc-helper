@@ -2,11 +2,13 @@ package checker
 
 import (
 	"errors"
+	"fmt"
 	"github.com/abramov-ks/autodoc-helper/pkg/autodoc"
 	"github.com/abramov-ks/autodoc-helper/pkg/db"
 	"github.com/abramov-ks/autodoc-helper/pkg/db/models"
 	"github.com/abramov-ks/autodoc-helper/pkg/db/repository"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -32,8 +34,15 @@ func (config Config) SavePartNumberCheckHistory(partNumberInfo *autodoc.Partnumb
 		log.Println("Error on updating checklist", checkListItemErr)
 	}
 
-	log.Printf("Деталь: %s мин. цена %.2f", partNumberRecord.Partnumber, partNumberRecord.MinimalPrice)
-	log.Printf("Изменение с первоначальной ценой %.2f", (partNumberRecord.MinimalPrice - checkListItem.InitalPrice))
+	message := fmt.Sprintf("%s: %s мин. цена %.2f, ", partNumberRecord.Info.Name, partNumberRecord.Partnumber, partNumberRecord.MinimalPrice)
+	message += fmt.Sprintf("изменение %.2f", (partNumberRecord.MinimalPrice - checkListItem.InitalPrice))
+
+	log.Println(message)
+
+	if partNumberRecord.MinimalPrice-checkListItem.InitalPrice != 0 {
+		config.Telegram.SendTelegramNotification(message, false)
+	}
+
 	return true
 }
 
@@ -70,13 +79,14 @@ func (config Config) InsertPartNumberToChecklist(partNumberInfo *autodoc.Partnum
 	}
 
 	if counter > 0 {
-		return nil, errors.New("partnumber already exists in list")
+		return nil, errors.New("partnumber " + partNumberInfo.PartNumber + " already exists in list")
 	}
 
 	newPartnumberChecklistItem := models.PartnumberChecklist{
 		Partnumber:      partNumberInfo.PartNumber,
 		InitalPrice:     partNumberInfo.MinimalPrice,
 		DateLastChecked: time.Now(),
+		Name:            partNumberInfo.Name,
 		Actual:          true,
 	}
 
@@ -118,25 +128,25 @@ func (config Config) doCheckAll(session *autodoc.AutodocSession) {
 }
 
 //
-func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession, partNumber string) {
-	if partNumber == "" {
+func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession, partNumbersWithComma string) {
+	if partNumbersWithComma == "" {
 		log.Println("No partnumber to check")
 		return
 	}
 
-	partNumberInfo, partNumberInfoErr := session.GetPartnumberPrices(partNumber)
-
-	if partNumberInfoErr != nil {
-		return
+	partNumbersArray := strings.Split(partNumbersWithComma, ",")
+	for _, partNumber := range partNumbersArray {
+		partNumberInfo, partNumberInfoErr := session.GetPartnumberPrices(partNumber)
+		if partNumberInfoErr != nil {
+			return
+		}
+		insertedItem, err := config.InsertPartNumberToChecklist(partNumberInfo)
+		if err != nil {
+			log.Println("Cannot add to checklist:", err)
+		} else {
+			log.Printf("%s successfully added to checklist with id #%d", insertedItem.Name, insertedItem.ID)
+		}
 	}
-
-	insertedItem, err := config.InsertPartNumberToChecklist(partNumberInfo)
-	if err != nil {
-		log.Println("Cannot add to checklist: ", err)
-		return
-	}
-
-	log.Println("Successfully added to checklist with id%", insertedItem.ID)
 
 	return
 }
