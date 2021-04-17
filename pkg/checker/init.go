@@ -29,21 +29,27 @@ func (config Config) SavePartNumberCheckHistory(partNumberInfo *autodoc.Partnumb
 		return false
 	}
 
-	checkListItem, checkListItemErr := config.UpdatePartNumberChecklistHistory(partNumberInfo.PartNumber)
+	_, checkListItemErr := config.UpdatePartNumberChecklistHistory(partNumberInfo.PartNumber)
 	if checkListItemErr != nil {
 		log.Println("Error on updating checklist", checkListItemErr)
 	}
 
-	message := fmt.Sprintf("%s: %s мин. цена %.2f, ", partNumberRecord.Info.Name, partNumberRecord.Partnumber, partNumberRecord.MinimalPrice)
-	message += fmt.Sprintf("изменение %.2f", (partNumberRecord.MinimalPrice - checkListItem.InitalPrice))
+	return true
+}
 
-	log.Println(message)
+func (config Config) getLastPartnumberInfo(partNumber string) (*autodoc.PartnumberPriceResponse, error) {
 
-	if partNumberRecord.MinimalPrice-checkListItem.InitalPrice != 0 {
-		config.Telegram.SendTelegramNotification(message, false)
+	dbInstance := db.GetConnection(&config.DataBase)
+	defer dbInstance.Close()
+
+	var record = new(models.PartnumberPricesTable)
+	selectError := dbInstance.Model(record).Where("partnumber = ?", partNumber).Limit(1).Order("id DESC").Select()
+
+	if selectError != nil {
+		return nil, selectError
 	}
 
-	return true
+	return &record.Info, nil
 }
 
 // UpdatePartNumberChecklistHistory
@@ -112,8 +118,21 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 		return
 	}
 
+	var previousPartNumberPriceInfo, checkError = config.getLastPartnumberInfo(partNumberInfo.PartNumber)
+	if checkError != nil {
+		log.Println("No previous price info")
+		return
+	}
+
 	config.SavePartNumberCheckHistory(partNumberInfo)
 
+	if previousPartNumberPriceInfo.MinimalPrice != partNumberInfo.MinimalPrice {
+		var message = fmt.Sprintf("%s: %s мин. цена %.2f, ", partNumberInfo.Name, partNumberInfo.PartNumber, partNumberInfo.MinimalPrice)
+		message += fmt.Sprintf("изменение %.2f", partNumberInfo.MinimalPrice-previousPartNumberPriceInfo.MinimalPrice)
+
+		log.Println(message)
+		config.Telegram.SendTelegramNotification(message, false)
+	}
 	return
 }
 
