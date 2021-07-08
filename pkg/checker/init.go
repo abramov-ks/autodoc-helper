@@ -122,13 +122,13 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 		return
 	}
 
+	config.SavePartNumberCheckHistory(partNumberInfo)
+
 	var previousPartNumberPriceInfo, checkError = config.getLastPartnumberInfo(partNumberInfo.PartNumber)
 	if checkError != nil {
 		log.Printf("No previous price info for %s", partNumberInfo.PartNumber)
-		//return
+		return
 	}
-
-	config.SavePartNumberCheckHistory(partNumberInfo)
 
 	if previousPartNumberPriceInfo.MinimalPrice != partNumberInfo.MinimalPrice {
 		var message = fmt.Sprintf("%s: %s мин. цена %.2f, ", partNumberInfo.Name, partNumberInfo.PartNumber, partNumberInfo.MinimalPrice)
