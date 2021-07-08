@@ -15,5 +15,5 @@ type Config struct {
 
 type AppAction struct {
 	Action string
-	Value  string
+	Value  []string
 }

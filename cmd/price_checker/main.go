@@ -46,9 +46,12 @@ func main() {
 	var addPartNumber string
 	var appVersion bool
 	var checkAll bool
+	var manufacterId string
+
 	flag.StringVar(&cfgPath, "config", "./config.yml", "path to config file")
 	flag.BoolVar(&appVersion, "version", false, "show application version")
 	flag.StringVar(&partNumber, "check", "", "Partnumber to check")
+	flag.StringVar(&manufacterId, "manufacter", "", "Manufacturer ID")
 	flag.BoolVar(&checkAll, "check-all", false, "Partnumber to check")
 	flag.StringVar(&addPartNumber, "add", "", "Partnumber to check")
 	flag.Parse()
@@ -57,7 +60,7 @@ func main() {
 		return
 	}
 	if err := ValidateConfigPath(cfgPath); err != nil {
-		fmt.Println("No config file provieded")
+		fmt.Println("No config file provided")
 		return
 	}
 
@@ -69,10 +72,10 @@ func main() {
 	var action = new(checker.AppAction)
 	if partNumber != "" {
 		action.Action = "check"
-		action.Value = partNumber
+		action.Value = append(action.Value, partNumber, manufacterId)
 	} else if addPartNumber != "" {
 		action.Action = "add"
-		action.Value = addPartNumber
+		action.Value = append(action.Value, addPartNumber, manufacterId)
 	} else if checkAll == true {
 		action.Action = "check-all"
 	}

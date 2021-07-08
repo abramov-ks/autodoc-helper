@@ -1,0 +1,1 @@
+ALTER TABLE "partnumber_checklist" ADD COLUMN "manufacter_id" INT;

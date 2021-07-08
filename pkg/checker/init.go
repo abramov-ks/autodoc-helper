@@ -8,6 +8,7 @@ import (
 	"github.com/abramov-ks/autodoc-helper/pkg/db/models"
 	"github.com/abramov-ks/autodoc-helper/pkg/db/repository"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -29,7 +30,7 @@ func (config Config) SavePartNumberCheckHistory(partNumberInfo *autodoc.Partnumb
 		return false
 	}
 
-	_, checkListItemErr := config.UpdatePartNumberChecklistHistory(partNumberInfo.PartNumber)
+	_, checkListItemErr := config.UpdatePartNumberChecklistHistory(*partNumberInfo)
 	if checkListItemErr != nil {
 		log.Println("Error on updating checklist", checkListItemErr)
 	}
@@ -53,18 +54,19 @@ func (config Config) getLastPartnumberInfo(partNumber string) (*autodoc.Partnumb
 }
 
 // UpdatePartNumberChecklistHistory
-func (config Config) UpdatePartNumberChecklistHistory(partNumber string) (*models.PartnumberChecklist, error) {
+func (config Config) UpdatePartNumberChecklistHistory(partNumber autodoc.PartnumberPriceResponse) (*models.PartnumberChecklist, error) {
 	dbInstance := db.GetConnection(&config.DataBase)
 	defer dbInstance.Close()
 
 	var partnumberChecklist = new(models.PartnumberChecklist)
-	selectError := dbInstance.Model(partnumberChecklist).Where("partnumber = ?", partNumber).Limit(1).Select()
+	selectError := dbInstance.Model(partnumberChecklist).Where("partnumber = ?", partNumber.PartNumber).Limit(1).Select()
 
 	if selectError != nil {
 		return nil, selectError
 	}
 
 	partnumberChecklist.DateLastChecked = time.Now()
+	partnumberChecklist.ManufacterId = partNumber.Manufacturer.Id
 
 	_, updateError := dbInstance.Model(partnumberChecklist).WherePK().Update()
 	if updateError != nil {
@@ -94,6 +96,7 @@ func (config Config) InsertPartNumberToChecklist(partNumberInfo *autodoc.Partnum
 		DateLastChecked: time.Now(),
 		Name:            partNumberInfo.Name,
 		Actual:          true,
+		ManufacterId:    partNumberInfo.Manufacturer.Id,
 	}
 
 	_, insertError := dbInstance.Model(&newPartnumberChecklistItem).Insert()
@@ -106,13 +109,14 @@ func (config Config) InsertPartNumberToChecklist(partNumberInfo *autodoc.Partnum
 }
 
 //
-func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumber string) {
-	if partNumber == "" {
+func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumber []string) {
+	if partNumber[0] == "" {
 		log.Println("No partNumber to check")
 		return
 	}
+	manufacterId, _ := strconv.Atoi(partNumber[1])
 
-	partNumberInfo, partNumberInfoErr := session.GetPartnumberPrices(partNumber)
+	partNumberInfo, partNumberInfoErr := session.GetPartnumberPrices(partNumber[0], manufacterId)
 	if partNumberInfoErr != nil {
 		log.Printf("Cannot check partNumber price: %s\n", partNumberInfoErr)
 		return
@@ -121,7 +125,7 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 	var previousPartNumberPriceInfo, checkError = config.getLastPartnumberInfo(partNumberInfo.PartNumber)
 	if checkError != nil {
 		log.Printf("No previous price info for %s", partNumberInfo.PartNumber)
-		return
+		//return
 	}
 
 	config.SavePartNumberCheckHistory(partNumberInfo)
@@ -142,20 +146,21 @@ func (config Config) doCheckAll(session *autodoc.AutodocSession) {
 		log.Println("Cannot get checklist: ", err)
 	}
 	for _, record := range checkRecords {
-		config.doPartnumberCheck(session, record.Partnumber)
+		config.doPartnumberCheck(session, []string{record.Partnumber, strconv.Itoa(record.ManufacterId)})
 	}
 }
 
 //
-func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession, partNumbersWithComma string) {
-	if partNumbersWithComma == "" {
+func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession, partNumbersWithComma []string) {
+	if partNumbersWithComma[0] == "" {
 		log.Println("No partnumber to check")
 		return
 	}
 
-	partNumbersArray := strings.Split(partNumbersWithComma, ",")
+	partNumbersArray := strings.Split(partNumbersWithComma[0], ",")
+	manufacterId, _ := strconv.Atoi(partNumbersWithComma[1])
 	for _, partNumber := range partNumbersArray {
-		partNumberInfo, partNumberInfoErr := session.GetPartnumberPrices(partNumber)
+		partNumberInfo, partNumberInfoErr := session.GetPartnumberPrices(partNumber, manufacterId)
 		if partNumberInfoErr != nil {
 			return
 		}

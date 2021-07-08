@@ -29,6 +29,12 @@ type AuthResult struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type ManufacterShortInfo struct {
+	Id              int    `json:"id"`
+	Name            string `json:"name"`
+	PopularityIndex int    `json:"popularityIndex"`
+}
+
 // ответ на запрос цен
 type PartnumberPriceResponse struct {
 	PartNumber          string                                 `json:"partnumber"`
@@ -37,6 +43,7 @@ type PartnumberPriceResponse struct {
 	MinimalPrice        float32                                `json:"minimalPrice"`
 	MinimalDeliveryDays int                                    `json:"minimalDeliveryDays"`
 	InventoryItems      []PartnumberPriceResponseInventoryItem `json:"inventoryItems"`
+	Manufacturer        ManufacterShortInfo                    `json:"manufacturer"`
 }
 
 // ценовые предложения в ответе

@@ -11,4 +11,5 @@ type PartnumberChecklist struct {
 	Name            string
 	DateLastChecked time.Time
 	Actual          bool
+	ManufacterId    int
 }
