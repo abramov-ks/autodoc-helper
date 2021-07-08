@@ -120,7 +120,7 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 
 	var previousPartNumberPriceInfo, checkError = config.getLastPartnumberInfo(partNumberInfo.PartNumber)
 	if checkError != nil {
-		log.Println("No previous price info")
+		log.Printf("No previous price info for %s", partNumberInfo.PartNumber)
 		return
 	}
 
