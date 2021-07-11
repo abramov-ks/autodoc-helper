@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var APP_VERSION = "0.1"
+var APP_VERSION = "1.0"
 
 // ValidateConfigPath Валидация конфига
 func ValidateConfigPath(path string) error {

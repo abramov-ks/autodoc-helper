@@ -134,14 +134,20 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 		var message = fmt.Sprintf("%s: %s мин. цена %.2f, ", partNumberInfo.Name, partNumberInfo.PartNumber, partNumberInfo.MinimalPrice)
 		message += fmt.Sprintf("изменение %.2f", partNumberInfo.MinimalPrice-previousPartNumberPriceInfo.MinimalPrice)
 
-		log.Println(message)
-		config.Telegram.SendTelegramNotification(message, false)
+		log.Printf("Send to telegram: %s", message)
+		_, sendError := config.Telegram.SendTelegramNotification(message, false)
+		if sendError != nil {
+			log.Printf("Telegram send error: %s", sendError)
+			return
+		}
 	}
 	return
 }
 
 func (config Config) doCheckAll(session *autodoc.AutodocSession) {
+	log.Println("Run check all in list...")
 	checkRecords, err := repository.GetPartnumbersChecklist(config.DataBase)
+	log.Printf("Found %d for checking", len(checkRecords))
 	if err != nil {
 		log.Println("Cannot get checklist: ", err)
 	}
@@ -152,8 +158,9 @@ func (config Config) doCheckAll(session *autodoc.AutodocSession) {
 
 //
 func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession, partNumbersWithComma []string) {
+	log.Println("Run add action...")
 	if partNumbersWithComma[0] == "" {
-		log.Println("No partnumber to check")
+		log.Println("No partnumber to add")
 		return
 	}
 
