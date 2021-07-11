@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var APP_VERSION = "1.0"
+var AppVersion = "1.0"
 
 // ValidateConfigPath Валидация конфига
 func ValidateConfigPath(path string) error {
@@ -56,7 +56,7 @@ func main() {
 	flag.StringVar(&addPartNumber, "add", "", "Partnumber to check")
 	flag.Parse()
 	if appVersion == true {
-		fmt.Printf("Price Checker v%s\n", APP_VERSION)
+		fmt.Printf("Price Checker v%s\n", AppVersion)
 		return
 	}
 	if err := ValidateConfigPath(cfgPath); err != nil {
