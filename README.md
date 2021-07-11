@@ -14,3 +14,8 @@ Usage:
 - check `./bin/price_checker --config ./config.yml --check <partnumber>`
 
 - app version `./bin/price_checker --config ./config.yml --version`
+
+
+#Changelog
+
+- 1.0: first release

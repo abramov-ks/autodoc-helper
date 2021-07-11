@@ -140,6 +140,8 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 			log.Printf("Telegram send error: %s", sendError)
 			return
 		}
+	} else {
+		log.Printf("No price changes for %s: %8.2f\u20BD", partNumberInfo.Name, partNumberInfo.MinimalPrice)
 	}
 	return
 }
