@@ -1,11 +1,14 @@
-#Autodoc helper
+# Autodoc helper
 
+## Description
+Small https://www.autodoc.ru/ price checker with telegram notifications
 
-Build
+## Build
 
 - `make build`
+- Run or add to crontab list
 
-Usage:
+## Usage:
 
 - Add to checklist `./bin/price_checker --config ./config.yml --add <partnumber> --manufacter <manufacter_id>`
 
@@ -16,6 +19,6 @@ Usage:
 - app version `./bin/price_checker --config ./config.yml --version`
 
 
-#Changelog
+## Changelog
 
 - 1.0: first release
