@@ -141,7 +141,7 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 			return
 		}
 	} else {
-		log.Printf("No price changes for %s: %8.2f\u20BD", partNumberInfo.Name, partNumberInfo.MinimalPrice)
+		log.Printf("No price changes for %s (%s): %8.2f\u20BD", partNumberInfo.DisplayPartNumber, partNumberInfo.Name, partNumberInfo.MinimalPrice)
 	}
 	return
 }
