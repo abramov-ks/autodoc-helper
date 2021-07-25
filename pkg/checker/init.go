@@ -109,7 +109,7 @@ func (config Config) InsertPartNumberToChecklist(partNumberInfo *autodoc.Partnum
 }
 
 //
-func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumber []string) {
+func (config Config) doPartnumberCheck(channel chan int, session *autodoc.AutodocSession, partNumber []string) {
 	if partNumber[0] == "" {
 		log.Println("No partNumber to check")
 		return
@@ -143,6 +143,7 @@ func (config Config) doPartnumberCheck(session *autodoc.AutodocSession, partNumb
 	} else {
 		log.Printf("No price changes for %s (%s): %8.2f\u20BD", partNumberInfo.DisplayPartNumber, partNumberInfo.Name, partNumberInfo.MinimalPrice)
 	}
+	channel <- 1
 	return
 }
 
@@ -153,8 +154,15 @@ func (config Config) doCheckAll(session *autodoc.AutodocSession) {
 	if err != nil {
 		log.Println("Cannot get checklist: ", err)
 	}
+	channel := make(chan int)
+	counter := 0
 	for _, record := range checkRecords {
-		config.doPartnumberCheck(session, []string{record.Partnumber, strconv.Itoa(record.ManufacterId)})
+		go config.doPartnumberCheck(channel, session, []string{record.Partnumber, strconv.Itoa(record.ManufacterId)})
+		counter++
+	}
+
+	for i := 0; i < counter; i++ {
+		<-channel
 	}
 }
 
@@ -195,7 +203,9 @@ func (config Config) Run(action *AppAction) {
 	}
 
 	if action.Action == "check" {
-		config.doPartnumberCheck(&autodocSession, action.Value)
+		channel := make(chan int)
+		config.doPartnumberCheck(channel, &autodocSession, action.Value)
+		<-channel
 		return
 	}
 
