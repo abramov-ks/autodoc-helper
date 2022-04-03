@@ -10,16 +10,14 @@ Small https://www.autodoc.ru/ price checker with telegram notifications
 
 ## Usage:
 
-- Add to checklist `./bin/price_checker --config ./config.yml --add <partnumber> --manufacter <manufacter_id>`
-
-- check all `./bin/price_checker --config ./config.yml --check-all`
-
-- check `./bin/price_checker --config ./config.yml --check <partnumber>`
-
 - app version `./bin/price_checker --config ./config.yml --version`
+- add to checklist `./bin/price_checker --config ./config.yml --add --partnumber <partnumber> --manufacter <manufacter_id>`
+- check by id `./bin/price_checker --config ./config.yml --check --partnumber <partnumber> --manufacter <manufacter_id>`
+- check all in list `./bin/price_checker --config ./config.yml --check-all`
 - cleanup db `./bin/price_checker --config ./config.yml --cleanup`
 
 
 ## Changelog
 
 - 1.0: first release
+- 1.1: add cleanup, change flags
