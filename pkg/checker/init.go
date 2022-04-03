@@ -122,9 +122,10 @@ func (config Config) doPartnumberCheck(channel chan int, session *autodoc.Autodo
 		return
 	}
 
+	var previousPartNumberPriceInfo, checkError = config.getLastPartnumberInfo(partNumberInfo.PartNumber)
+
 	config.SavePartNumberCheckHistory(partNumberInfo)
 
-	var previousPartNumberPriceInfo, checkError = config.getLastPartnumberInfo(partNumberInfo.PartNumber)
 	if checkError != nil {
 		log.Printf("No previous price info for %s", partNumberInfo.PartNumber)
 		return
@@ -193,29 +194,29 @@ func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession,
 }
 
 // Run Запуск
-func (config Config) Run(action *AppAction) {
+func (config Config) Run(action *AppAction) int {
 	log.Println("run checker for user", config.Autodoc.Username)
 	var autodocSession autodoc.AutodocSession
 	autodocSession.FillFromConfig(&config.Autodoc)
 	ok := autodocSession.Auth()
 	if !ok {
-		log.Println("Cannot create autodoc session")
+		log.Println("Cannot create autodoc session. Check login and password")
+		return 1
 	}
 
 	if action.Action == "check" {
 		channel := make(chan int)
 		config.doPartnumberCheck(channel, &autodocSession, action.Value)
 		<-channel
-		return
 	}
 
 	if action.Action == "add" {
 		config.doAddPartnumberForChecking(&autodocSession, action.Value)
-		return
 	}
 
 	if action.Action == "check-all" {
 		config.doCheckAll(&autodocSession)
 	}
+	return 0
 
 }

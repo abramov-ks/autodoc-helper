@@ -80,6 +80,6 @@ func main() {
 		action.Action = "check-all"
 	}
 
-	cfg.Run(action)
+	os.Exit(cfg.Run(action))
 
 }
