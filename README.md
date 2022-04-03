@@ -17,6 +17,7 @@ Small https://www.autodoc.ru/ price checker with telegram notifications
 - check `./bin/price_checker --config ./config.yml --check <partnumber>`
 
 - app version `./bin/price_checker --config ./config.yml --version`
+- cleanup db `./bin/price_checker --config ./config.yml --cleanup`
 
 
 ## Changelog

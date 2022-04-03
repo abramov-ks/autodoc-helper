@@ -193,6 +193,22 @@ func (config Config) doAddPartnumberForChecking(session *autodoc.AutodocSession,
 	return
 }
 
+func (config Config) doCleanup() int {
+	dbInstance := db.GetConnection(&config.DataBase)
+	defer dbInstance.Close()
+	log.Println("Do cleanup...")
+	partNumberRecord := models.PartnumberPricesTable{}
+
+	res, err := dbInstance.Model(&partNumberRecord).Where("date_checked < NOW() - INTERVAL '1 week'").Delete()
+
+	if err != nil {
+		log.Printf("Cannot delete records: %s", err)
+	}
+
+	return res.RowsAffected()
+
+}
+
 // Run Запуск
 func (config Config) Run(action *AppAction) int {
 	log.Println("run checker for user", config.Autodoc.Username)
@@ -217,6 +233,11 @@ func (config Config) Run(action *AppAction) int {
 	if action.Action == "check-all" {
 		config.doCheckAll(&autodocSession)
 	}
+
+	if action.Action == "cleanup" {
+		config.doCleanup()
+	}
+
 	return 0
 
 }
