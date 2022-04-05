@@ -132,8 +132,14 @@ func (config Config) doPartnumberCheck(channel chan int, session *autodoc.Autodo
 	}
 
 	if previousPartNumberPriceInfo.MinimalPrice != partNumberInfo.MinimalPrice {
-		var message = fmt.Sprintf("%s: %s мин. цена %.2f, ", partNumberInfo.Name, partNumberInfo.PartNumber, partNumberInfo.MinimalPrice)
-		message += fmt.Sprintf("изменение %.2f", partNumberInfo.MinimalPrice-previousPartNumberPriceInfo.MinimalPrice)
+		var emoji string
+		if partNumberInfo.MinimalPrice > previousPartNumberPriceInfo.MinimalPrice {
+			emoji = "&#8599;"
+		} else {
+			emoji = "&#8600;"
+		}
+		var message = fmt.Sprintf("%s %s (%s) текущая мин. цена: %.2f руб., ", emoji, partNumberInfo.Name, partNumberInfo.PartNumber, partNumberInfo.MinimalPrice)
+		message += fmt.Sprintf("изменение %.2f руб.", partNumberInfo.MinimalPrice-previousPartNumberPriceInfo.MinimalPrice)
 
 		log.Printf("Send to telegram: %s", message)
 		_, sendError := config.Telegram.SendTelegramNotification(message, false)

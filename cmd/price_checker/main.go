@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"
-)
+)ц
 
 type Options struct {
 	Config         string `long:"config" short:"c" default:"./config.yml" description:"Set config path"`
