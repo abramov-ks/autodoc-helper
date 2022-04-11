@@ -142,7 +142,7 @@ func (config Config) doPartnumberCheck(channel chan int, session *autodoc.Autodo
 		message += fmt.Sprintf("изменение %.2f руб.", partNumberInfo.MinimalPrice-previousPartNumberPriceInfo.MinimalPrice)
 
 		log.Printf("Send to telegram: %s", message)
-		_, sendError := config.Telegram.SendTelegramNotification(message, false)
+		_, sendError := config.Telegram.SendTelegramNotification(message, false, "html")
 		if sendError != nil {
 			log.Printf("Telegram send error: %s", sendError)
 			return

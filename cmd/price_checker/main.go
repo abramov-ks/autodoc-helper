@@ -52,51 +52,6 @@ func NewConfig(configPath string) (*checker.Config, error) {
 }
 
 func main() {
-	//var cfgPath string
-	//var partNumber string
-	//var addPartNumber string
-	//var appVersion bool
-	//var checkAll bool
-	//var cleanup bool
-	//var manufacterId string
-	//
-	//flag.StringVar(&cfgPath, "config", "./config.yml", "path to config file")
-	//flag.BoolVar(&appVersion, "version", false, "show application version")
-	//flag.StringVar(&partNumber, "check", "", "Partnumber to check")
-	//flag.StringVar(&manufacterId, "manufacter", "", "Manufacturer ID")
-	//flag.BoolVar(&checkAll, "check-all", false, "Partnumber to check")
-	//flag.BoolVar(&cleanup, "cleanup", false, "Clean system")
-	//flag.StringVar(&addPartNumber, "add", "", "Partnumber to check")
-	//flag.Parse()
-	//if appVersion == true {
-	//	fmt.Printf("Price Checker v%s\n", AppVersion)
-	//	os.Exit(0)
-	//}
-	//if err := ValidateConfigPath(cfgPath); err != nil {
-	//	fmt.Println("No config file provided")
-	//	os.Exit(0)
-	//}
-	//
-	//cfg, err := NewConfig(cfgPath)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//var action = new(checker.AppAction)
-	//if partNumber != "" {
-	//	action.Action = "check"
-	//	action.Value = append(action.Value, partNumber, manufacterId)
-	//} else if addPartNumber != "" {
-	//	action.Action = "add"
-	//	action.Value = append(action.Value, addPartNumber, manufacterId)
-	//} else if checkAll == true {
-	//	action.Action = "check-all"
-	//} else if cleanup == true {
-	//	action.Action = "cleanup"
-	//}
-	//
-	//os.Exit(cfg.Run(action))
-
 	var opts Options
 	parser := flags.NewParser(&opts, flags.Default)
 	_, err := parser.Parse()

@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func (telegram *TelegramConfig) SendTelegramNotification(text string, shouldMute bool) (string, error) {
+func (telegram *TelegramConfig) SendTelegramNotification(text string, shouldMute bool, parseMode string) (string, error) {
 
 	if telegram.Token == "" || telegram.ChatId == 0 {
 		return "", errors.New("TelegramConfig not cofigured")
@@ -22,6 +22,7 @@ func (telegram *TelegramConfig) SendTelegramNotification(text string, shouldMute
 		url.Values{
 			"chat_id":              {strconv.Itoa(telegram.ChatId)},
 			"text":                 {text},
+			"parse_mode":           {parseMode},
 			"disable_notification": {strconv.FormatBool(shouldMute)},
 		})
 
